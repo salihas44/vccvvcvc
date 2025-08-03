@@ -680,7 +680,7 @@ const AdminModal = ({ isOpen, onClose }) => {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => toast.info('Düzenleme özelliği yakında!')}
+                            onClick={() => handleEditProduct(product)}
                           >
                             <Edit className="h-3 w-3" />
                           </Button>
