@@ -237,6 +237,11 @@ const AdminModal = ({ isOpen, onClose, onProductChange }) => {
         setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p));
         toast.success('Ürün başarıyla güncellendi!');
         
+        // Update main page products
+        if (onProductChange) {
+          onProductChange();
+        }
+        
         // Reset form and editing state
         setEditingProduct(null);
         setProductForm({
