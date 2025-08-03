@@ -19,9 +19,9 @@ import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 
 const Home = () => {
-  // State management
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // State management - Use mock data directly for now
+  const [products, setProducts] = useState(mockProducts);
+  const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [user, setUser] = useState({ isLoggedIn: false, email: '', name: '' });
   
