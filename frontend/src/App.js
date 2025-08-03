@@ -10,7 +10,7 @@ import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import CartModal from './components/CartModal';
 import ProductModal from './components/ProductModal';
-import AdminRoute from './components/AdminRoute';
+import AdminModal from './components/AdminModal';
 
 // Mock Data
 import { mockProducts } from './data/mockData';
