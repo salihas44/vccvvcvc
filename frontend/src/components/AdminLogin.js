@@ -16,8 +16,12 @@ const AdminLogin = ({ onAdminLogin }) => {
     setLoading(true);
     setError('');
 
+    console.log('Admin login attempt:', loginData);
+
     try {
       const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+      console.log('Backend URL:', BACKEND_URL);
+      
       const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -26,25 +30,31 @@ const AdminLogin = ({ onAdminLogin }) => {
         body: JSON.stringify(loginData)
       });
 
+      console.log('Response status:', response.status);
+
       if (response.ok) {
         const data = await response.json();
+        console.log('Login response:', data);
         
         // Check if user is admin
         if (data.user && data.user.role === 'admin') {
+          console.log('Admin login successful, calling onAdminLogin');
           onAdminLogin({
             token: data.access_token,
             user: data.user
           });
         } else {
+          console.log('User is not admin:', data.user);
           setError('Bu hesap admin yetkisine sahip değil!');
         }
       } else {
         const errorData = await response.json();
+        console.log('Login error:', errorData);
         setError(errorData.detail || 'Giriş başarısız!');
       }
     } catch (err) {
+      console.error('Network error during login:', err);
       setError('Bağlantı hatası! Lütfen tekrar deneyin.');
-      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -122,7 +132,10 @@ const AdminLogin = ({ onAdminLogin }) => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Demo için: admin@roboturkiye.com / admin123
+              Test için: admin@roboturkiye.com / admin123
+            </p>
+            <p className="text-xs text-gray-500 mt-2">
+              Debug: {process.env.REACT_APP_BACKEND_URL}
             </p>
           </div>
         </CardContent>
