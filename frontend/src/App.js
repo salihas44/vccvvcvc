@@ -19,7 +19,7 @@ import { Toaster } from './components/ui/sonner';
 import { toast } from 'sonner';
 
 const Home = () => {
-  // State management - Use mock data directly for now
+  // State management - Hybrid: start with mock, update with API
   const [products, setProducts] = useState(mockProducts);
   const [loading, setLoading] = useState(false);
   const [cartItems, setCartItems] = useState([]);
@@ -33,6 +33,35 @@ const Home = () => {
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+
+  // Fetch products from API and update with real data
+  const refreshProducts = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/products/`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.products && data.products.length > 0) {
+          // Use API data but convert to frontend format
+          const apiProducts = data.products.map(product => ({
+            id: product._id,
+            name: product.name,
+            image: product.image,
+            originalPrice: product.original_price,
+            currentPrice: product.current_price,
+            rating: product.rating,
+            badge: product.badge,
+            category: product.category
+          }));
+          setProducts(apiProducts);
+          toast.success('Ürünler güncellendi!');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      // Keep existing products if API fails
+    }
+  };
 
   // Load cart from localStorage on mount
   useEffect(() => {
