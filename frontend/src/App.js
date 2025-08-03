@@ -193,11 +193,20 @@ const Home = () => {
 
         {/* Products Section */}
         <section className="py-8">
-          <ProductGrid
-            products={products}
-            onAddToCart={handleAddToCart}
-            onProductClick={handleProductClick}
-          />
+          {loading ? (
+            <div className="max-w-7xl mx-auto px-4 py-8">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Ürünler yükleniyor...</p>
+              </div>
+            </div>
+          ) : (
+            <ProductGrid
+              products={products}
+              onAddToCart={handleAddToCart}
+              onProductClick={handleProductClick}
+            />
+          )}
         </section>
       </main>
 
