@@ -101,6 +101,7 @@ const AdminModal = ({ isOpen, onClose }) => {
           setCurrentView('dashboard');
           toast.success(`Hoş geldiniz ${data.user.name}!`);
           fetchProducts(data.access_token);
+          fetchCategories();
         } else {
           setError('Bu hesap admin yetkisine sahip değil!');
         }
