@@ -285,7 +285,208 @@ const AdminModal = ({ isOpen, onClose }) => {
     toast.success('Başarıyla çıkış yaptınız');
   };
 
-  const formatPrice = (price) => {
+  const renderProductFormView = () => (
+    <div className="w-full">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6 pb-4 border-b">
+        <div className="flex items-center space-x-4">
+          <Button
+            variant="outline"
+            onClick={() => {
+              setCurrentView('dashboard');
+              setEditingProduct(null);
+              setProductForm({
+                name: '',
+                description: '',
+                image: '',
+                original_price: '',
+                current_price: '',
+                rating: 5,
+                category: '',
+                badge: '',
+                in_stock: true
+              });
+            }}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Geri
+          </Button>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {editingProduct ? 'Ürün Düzenle' : 'Yeni Ürün Ekle'}
+            </h2>
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Left Column */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="productName">Ürün Adı *</Label>
+              <Input
+                id="productName"
+                value={productForm.name}
+                onChange={(e) => setProductForm({...productForm, name: e.target.value})}
+                placeholder="robo Ürün Adı"
+                required
+                disabled={productFormLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="description">Açıklama *</Label>
+              <Textarea
+                id="description"
+                value={productForm.description}
+                onChange={(e) => setProductForm({...productForm, description: e.target.value})}
+                placeholder="Ürün açıklaması..."
+                rows={4}
+                required
+                disabled={productFormLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="image">Resim URL'si *</Label>
+              <Input
+                id="image"
+                value={productForm.image}
+                onChange={(e) => setProductForm({...productForm, image: e.target.value})}
+                placeholder="https://images.unsplash.com/..."
+                required
+                disabled={productFormLoading}
+              />
+              {productForm.image && (
+                <div className="mt-2">
+                  <img
+                    src={productForm.image}
+                    alt="Ürün önizleme"
+                    className="w-24 h-24 object-cover rounded border"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="category">Kategori *</Label>
+              <Select 
+                value={productForm.category} 
+                onValueChange={(value) => setProductForm({...productForm, category: value})}
+                disabled={productFormLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Kategori seçin" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category._id} value={category.slug}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="originalPrice">Orijinal Fiyat (₺) *</Label>
+              <Input
+                id="originalPrice"
+                type="number"
+                step="0.01"
+                value={productForm.original_price}
+                onChange={(e) => setProductForm({...productForm, original_price: e.target.value})}
+                placeholder="1999.99"
+                required
+                disabled={productFormLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="currentPrice">Güncel Fiyat (₺) *</Label>
+              <Input
+                id="currentPrice"
+                type="number"
+                step="0.01"
+                value={productForm.current_price}
+                onChange={(e) => setProductForm({...productForm, current_price: e.target.value})}
+                placeholder="1499.99"
+                required
+                disabled={productFormLoading}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="rating">Puan (1-5)</Label>
+              <Select 
+                value={productForm.rating.toString()} 
+                onValueChange={(value) => setProductForm({...productForm, rating: parseInt(value)})}
+                disabled={productFormLoading}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">1 Yıldız</SelectItem>
+                  <SelectItem value="2">2 Yıldız</SelectItem>
+                  <SelectItem value="3">3 Yıldız</SelectItem>
+                  <SelectItem value="4">4 Yıldız</SelectItem>
+                  <SelectItem value="5">5 Yıldız</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="badge">Rozet (opsiyonel)</Label>
+              <Input
+                id="badge"
+                value={productForm.badge}
+                onChange={(e) => setProductForm({...productForm, badge: e.target.value})}
+                placeholder="40% İNDİRİM, YENİ, vb."
+                disabled={productFormLoading}
+              />
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="inStock"
+                checked={productForm.in_stock}
+                onCheckedChange={(checked) => setProductForm({...productForm, in_stock: checked})}
+                disabled={productFormLoading}
+              />
+              <Label htmlFor="inStock">Stokta mevcut</Label>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end space-x-4 pt-6 border-t">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={() => setCurrentView('dashboard')}
+            disabled={productFormLoading}
+          >
+            İptal
+          </Button>
+          <Button 
+            type="submit" 
+            disabled={productFormLoading} 
+            className="bg-green-600 hover:bg-green-700"
+          >
+            {productFormLoading ? 'Kaydediliyor...' : (editingProduct ? 'Güncelle' : 'Kaydet')}
+          </Button>
+        </div>
+      </form>
+    </div>
+  );
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
       currency: 'TRY',
