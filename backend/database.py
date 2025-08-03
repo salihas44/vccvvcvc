@@ -214,7 +214,7 @@ async def initialize_database():
             product = ProductInDB(
                 name=mock_product["name"],
                 description=f"{mock_product['name']} - Yüksek kalite, garantili ürün. Hızlı kargo ile kapınızda!",
-                image="/api/placeholder/300/300",  # Placeholder for now
+                image=mock_product["image"],  # Use real image URL
                 original_price=mock_product["originalPrice"],
                 current_price=mock_product["currentPrice"],
                 rating=mock_product["rating"],
