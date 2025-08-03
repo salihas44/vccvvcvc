@@ -257,6 +257,26 @@ const AdminModal = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
+
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/admin/products/${productId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${admin.token}` }
+      });
+
+      if (response.ok) {
+        setProducts(products.filter(p => p._id !== productId));
+        toast.success('Ürün başarıyla silindi!');
+      } else {
+        toast.error('Ürün silinirken hata oluştu!');
+      }
+    } catch (error) {
+      toast.error('Bağlantı hatası!');
+    }
+  };
+
   const handleLogout = () => {
     setAdmin(null);
     localStorage.removeItem('roboturkiye_admin');
