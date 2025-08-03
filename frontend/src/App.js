@@ -244,6 +244,7 @@ const Home = () => {
       <AdminModal
         isOpen={isAdminModalOpen}
         onClose={() => setIsAdminModalOpen(false)}
+        onProductChange={fetchProducts}
       />
 
       {/* Toast Container */}
