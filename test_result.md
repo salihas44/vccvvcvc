@@ -201,11 +201,14 @@ backend:
     file: "backend/database.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Auto-populate database with Turkish product data on startup. Categories and products properly seeded."
+      - working: true
+        agent: "testing"
+        comment: "✅ TESTED: Database initialization working perfectly. Turkish products auto-populated with proper names like 'robo Uzaktan Kumandalı Isıtma ve Soğutma Ünitesi'. All 5 categories and 13 products loaded correctly with Turkish lira pricing."
 
 frontend:
   - task: "E-commerce Frontend Components"
