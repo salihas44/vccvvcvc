@@ -34,7 +34,7 @@ const Home = () => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Load products from API
+  // Load products from API with fallback to mock data
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -42,15 +42,19 @@ const Home = () => {
       
       if (response.ok) {
         const data = await response.json();
-        setProducts(data.products || []);
+        if (data.products && data.products.length > 0) {
+          setProducts(data.products);
+        } else {
+          // Use mock data if no products from API
+          setProducts(mockProducts);
+        }
       } else {
-        console.error('Failed to fetch products');
-        // Fallback to mock data if API fails
+        // Use mock data if API fails
         setProducts(mockProducts);
       }
     } catch (error) {
       console.error('Error fetching products:', error);
-      // Fallback to mock data if API fails
+      // Use mock data if API fails
       setProducts(mockProducts);
     } finally {
       setLoading(false);
