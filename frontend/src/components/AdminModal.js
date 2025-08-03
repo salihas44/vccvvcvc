@@ -618,7 +618,7 @@ const AdminModal = ({ isOpen, onClose }) => {
             <CardTitle>Ürün Yönetimi</CardTitle>
             <Button 
               className="bg-green-600 hover:bg-green-700"
-              onClick={() => toast.info('Ürün ekleme özelliği yakında!')}
+              onClick={() => setCurrentView('add-product')}
             >
               <Plus className="h-4 w-4 mr-2" />
               Yeni Ürün
