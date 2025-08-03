@@ -42,17 +42,25 @@ const Home = () => {
       if (response.ok) {
         const data = await response.json();
         if (data.products && data.products.length > 0) {
-          // Use API data but convert to frontend format
-          const apiProducts = data.products.map(product => ({
-            id: product._id,
-            name: product.name,
-            image: product.image,
-            originalPrice: product.original_price,
-            currentPrice: product.current_price,
-            rating: product.rating,
-            badge: product.badge,
-            category: product.category
-          }));
+          // Use API data but fix image URLs using mock data as reference
+          const apiProducts = data.products.map(product => {
+            // Find matching mock product by name
+            const mockProduct = mockProducts.find(mock => 
+              mock.name.includes(product.name.split(' ').slice(1, 4).join(' ')) ||
+              product.name.includes(mock.name.split(' ').slice(1, 4).join(' '))
+            );
+            
+            return {
+              id: product._id,
+              name: product.name,
+              image: mockProduct ? mockProduct.image : product.image,
+              originalPrice: product.original_price,
+              currentPrice: product.current_price,
+              rating: product.rating,
+              badge: product.badge,
+              category: product.category
+            };
+          });
           setProducts(apiProducts);
           toast.success('Ürünler güncellendi!');
         }
