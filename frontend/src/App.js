@@ -231,12 +231,12 @@ const Home = () => {
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/admin" element={<AdminRoute />} />
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </div>
   );
 }
