@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Dashboard - RoboTurkiye</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f9fafb;
+        }
+        .header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .welcome {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+        }
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        .products-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+        .add-product-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-left: auto;
+        }
+        .add-product-btn:hover {
+            background: #059669;
+        }
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .products-table th,
+        .products-table td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .products-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #6b7280;
+        }
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="header-title">Admin Paneli</h1>
+        <button class="logout-btn" onclick="logout()">Çıkış</button>
+    </div>
+
+    <div class="container">
+        <div class="welcome">
+            <h2>Hoş geldiniz, <span id="admin-name">Admin User</span>!</h2>
+            <p>RoboTurkiye yönetici panelinde ürünlerinizi yönetebilirsiniz.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="total-products">-</div>
+                <div class="stat-label">Toplam Ürün</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="stock-products">-</div>
+                <div class="stat-label">Stokta Olan</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="out-of-stock">-</div>
+                <div class="stat-label">Stokta Olmayan</div>
+            </div>
+        </div>
+
+        <div class="products-section">
+            <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="section-title">Ürün Yönetimi</h3>
+                <button class="add-product-btn" onclick="addProduct()">+ Yeni Ürün</button>
+            </div>
+
+            <div id="products-content">
+                <div class="loading">Ürünler yükleniyor...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let adminData = null;
+
+        // Check if admin is logged in
+        function checkAuth() {
+            const savedAdmin = localStorage.getItem('roboturkiye_admin');
+            if (!savedAdmin) {
+                window.location.href = '/admin.html';
+                return false;
+            }
+
+            try {
+                adminData = JSON.parse(savedAdmin);
+                document.getElementById('admin-name').textContent = adminData.user.name;
+                return true;
+            } catch (error) {
+                localStorage.removeItem('roboturkiye_admin');
+                window.location.href = '/admin.html';
+                return false;
+            }
+        }
+
+        // Load products
+        async function loadProducts() {
+            if (!adminData) return;
+
+            try {
+                const response = await fetch('/api/products/', {
+                    headers: {
+                        'Authorization': `Bearer ${adminData.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProducts(data.products || []);
+                    updateStats(data.products || []);
+                } else {
+                    document.getElementById('products-content').innerHTML = 
+                        '<div class="error">Ürünler yüklenirken hata oluştu!</div>';
+                }
+            } catch (error) {
+                document.getElementById('products-content').innerHTML = 
+                    '<div class="error">Bağlantı hatası!</div>';
+            }
+        }
+
+        // Display products
+        function displayProducts(products) {
+            const content = document.getElementById('products-content');
+            
+            if (products.length === 0) {
+                content.innerHTML = '<p class="loading">Henüz ürün bulunmuyor.</p>';
+                return;
+            }
+
+            const table = `
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Ürün Adı</th>
+                            <th>Kategori</th>
+                            <th>Fiyat</th>
+                            <th>Stok</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${products.map(product => `
+                            <tr>
+                                <td>${product.name}</td>
+                                <td>${product.category}</td>
+                                <td>${formatPrice(product.current_price)}</td>
+                                <td>
+                                    <span style="color: ${product.in_stock ? '#10b981' : '#ef4444'}">
+                                        ${product.in_stock ? 'Stokta' : 'Stok Yok'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button onclick="editProduct('${product._id}')" style="margin-right: 0.5rem; background: #3b82f6; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;">Düzenle</button>
+                                    <button onclick="deleteProduct('${product._id}')" style="background: #ef4444; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer;">Sil</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            content.innerHTML = table;
+        }
+
+        // Update statistics
+        function updateStats(products) {
+            const total = products.length;
+            const inStock = products.filter(p => p.in_stock).length;
+            const outOfStock = total - inStock;
+
+            document.getElementById('total-products').textContent = total;
+            document.getElementById('stock-products').textContent = inStock;
+            document.getElementById('out-of-stock').textContent = outOfStock;
+        }
+
+        // Format price
+        function formatPrice(price) {
+            return new Intl.NumberFormat('tr-TR', {
+                minimumFractionDigits: 2
+            }).format(price) + '₺';
+        }
+
+        // Add product
+        function addProduct() {
+            alert('Yeni ürün ekleme özelliği yakında eklenecek!');
+        }
+
+        // Edit product
+        function editProduct(productId) {
+            alert('Ürün düzenleme özelliği yakında eklenecek!');
+        }
+
+        // Delete product
+        async function deleteProduct(productId) {
+            if (!confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/products/${productId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${adminData.token}`
+                    }
+                });
+
+                if (response.ok) {
+                    alert('Ürün başarıyla silindi!');
+                    loadProducts(); // Reload products
+                } else {
+                    alert('Ürün silinirken hata oluştu!');
+                }
+            } catch (error) {
+                alert('Bağlantı hatası!');
+            }
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('roboturkiye_admin');
+            window.location.href = '/admin.html';
+        }
+
+        // Initialize
+        if (checkAuth()) {
+            loadProducts();
+        }
+    </script>
+</body>
+</html>
