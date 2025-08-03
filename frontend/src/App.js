@@ -65,7 +65,8 @@ const Home = () => {
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    // Don't fetch from API, use mock data directly
+    // Load initial products from API
+    refreshProducts();
     
     const savedCart = localStorage.getItem('roboturkiye_cart');
     if (savedCart) {
