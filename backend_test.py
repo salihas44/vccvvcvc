@@ -99,7 +99,7 @@ class BackendTester:
                     for product in products:
                         if "robo" in product.get("name", "").lower():
                             turkish_product_found = True
-                            self.test_product_id = product.get("id")
+                            self.test_product_id = product.get("_id")
                             break
                     
                     if turkish_product_found:
