@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { HashRouter, Routes, Route } from "react-router-dom";
 
 // Components
 import Header from './components/Header';
