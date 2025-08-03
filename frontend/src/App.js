@@ -183,7 +183,7 @@ const Home = () => {
         style={{
           background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
           boxShadow: '0 8px 25px rgba(220, 38, 38, 0.3)',
-          zIndex: 9999
+          zIndex: 999999
         }}
       >
         <span>🔐</span>
