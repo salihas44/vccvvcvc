@@ -349,8 +349,8 @@ class BackendTester:
             response = self.session.post(f"{API_BASE}/admin/products", json=new_product, headers=headers)
             if response.status_code == 200:
                 product = response.json()
-                if product.get("id"):
-                    created_product_id = product["id"]
+                if product.get("_id"):
+                    created_product_id = product["_id"]
                     self.log_success("Admin Create Product", f"Product created: {product.get('name')}")
                     self.results["admin_endpoints"] = True
                 else:
