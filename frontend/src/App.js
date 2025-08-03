@@ -34,37 +34,10 @@ const Home = () => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
-  // Load products from API with fallback to mock data
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`${BACKEND_URL}/api/products/`);
-      
-      if (response.ok) {
-        const data = await response.json();
-        if (data.products && data.products.length > 0) {
-          setProducts(data.products);
-        } else {
-          // Use mock data if no products from API
-          setProducts(mockProducts);
-        }
-      } else {
-        // Use mock data if API fails
-        setProducts(mockProducts);
-      }
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      // Use mock data if API fails
-      setProducts(mockProducts);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Load cart from localStorage on mount
   useEffect(() => {
-    fetchProducts(); // Load products from API
-
+    // Don't fetch from API, use mock data directly
+    
     const savedCart = localStorage.getItem('roboturkiye_cart');
     if (savedCart) {
       try {
