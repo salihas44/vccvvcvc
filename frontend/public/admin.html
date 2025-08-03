@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin Panel - RoboTurkiye</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f3f4f6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .admin-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .admin-icon {
+            width: 60px;
+            height: 60px;
+            background: #dc2626;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 24px;
+        }
+        .admin-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        .admin-subtitle {
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #374151;
+            font-weight: 500;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        .admin-button {
+            width: 100%;
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .admin-button:hover {
+            background: #b91c1c;
+        }
+        .admin-button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 14px;
+        }
+        .demo-info {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .loading {
+            text-align: center;
+            color: #6b7280;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <div class="admin-header">
+            <div class="admin-icon">🔐</div>
+            <h1 class="admin-title">Admin Paneli</h1>
+            <p class="admin-subtitle">RoboTurkiye yönetici girişi</p>
+        </div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <form id="admin-form">
+            <div class="form-group">
+                <label class="form-label" for="email">E-posta</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    class="form-input"
+                    placeholder="admin@roboturkiye.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Şifre</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    class="form-input"
+                    placeholder="Admin şifrenizi girin"
+                    required
+                >
+            </div>
+
+            <button type="submit" id="login-btn" class="admin-button">
+                Admin Girişi
+            </button>
+        </form>
+
+        <div class="demo-info">
+            <p><strong>Test için:</strong><br>
+            admin@roboturkiye.com / admin123</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('admin-form');
+        const errorDiv = document.getElementById('error-message');
+        const loginBtn = document.getElementById('login-btn');
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            errorDiv.style.display = 'none';
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideError();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Giriş yapılıyor...';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    if (data.user && data.user.role === 'admin') {
+                        // Save admin data
+                        localStorage.setItem('roboturkiye_admin', JSON.stringify({
+                            token: data.access_token,
+                            user: data.user
+                        }));
+                        
+                        // Redirect to dashboard
+                        window.location.href = '/admin-dashboard.html';
+                    } else {
+                        showError('Bu hesap admin yetkisine sahip değil!');
+                    }
+                } else {
+                    const errorData = await response.json();
+                    showError(errorData.detail || 'Giriş başarısız!');
+                }
+            } catch (err) {
+                showError('Bağlantı hatası! Lütfen tekrar deneyin.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Admin Girişi';
+            }
+        });
+
+        // Auto-fill for demo
+        document.getElementById('email').value = 'admin@roboturkiye.com';
+        document.getElementById('password').value = 'admin123';
+    </script>
+</body>
+</html>
