@@ -237,12 +237,9 @@ const Home = () => {
 function App() {
   return (
     <div className="App">
-      <HashRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/admin" element={<AdminRoute />} />
-        </Routes>
-      </HashRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </div>
   );
 }
