@@ -163,6 +163,11 @@ const AdminModal = ({ isOpen, onClose, onProductChange }) => {
         setProducts([newProduct, ...products]); // Add to beginning of list
         toast.success('Ürün başarıyla eklendi!');
         
+        // Update main page products
+        if (onProductChange) {
+          onProductChange();
+        }
+        
         // Reset form
         setProductForm({
           name: '',
