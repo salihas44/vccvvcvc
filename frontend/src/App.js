@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import LoginModal from './components/LoginModal';
 import CartModal from './components/CartModal';
 import ProductModal from './components/ProductModal';
+import AdminRoute from './components/AdminRoute';
 
 // Mock Data
 import { mockProducts } from './data/mockData';
@@ -175,6 +176,16 @@ const Home = () => {
       {/* Footer */}
       <Footer />
 
+      {/* Admin Link */}
+      <div className="fixed bottom-4 right-4">
+        <a 
+          href="/admin" 
+          className="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors shadow-lg"
+        >
+          Admin Paneli
+        </a>
+      </div>
+
       {/* Modals */}
       <LoginModal
         isOpen={isLoginModalOpen}
@@ -219,6 +230,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/admin" element={<AdminRoute />} />
         </Routes>
       </BrowserRouter>
     </div>
