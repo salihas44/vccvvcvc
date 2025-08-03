@@ -34,8 +34,33 @@ const Home = () => {
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
+  // Load products from API
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${BACKEND_URL}/api/products/`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setProducts(data.products || []);
+      } else {
+        console.error('Failed to fetch products');
+        // Fallback to mock data if API fails
+        setProducts(mockProducts);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      // Fallback to mock data if API fails
+      setProducts(mockProducts);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load cart from localStorage on mount
   useEffect(() => {
+    fetchProducts(); // Load products from API
+
     const savedCart = localStorage.getItem('roboturkiye_cart');
     if (savedCart) {
       try {
