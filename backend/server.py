@@ -56,4 +56,9 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@app.on_event("startup")
+async def startup_db():
+    await initialize_database()
+    logger.info("Database initialized successfully")
+
 
