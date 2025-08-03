@@ -20,7 +20,8 @@ import { toast } from 'sonner';
 
 const Home = () => {
   // State management
-  const [products] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [cartItems, setCartItems] = useState([]);
   const [user, setUser] = useState({ isLoggedIn: false, email: '', name: '' });
   
@@ -30,6 +31,8 @@ const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
   // Load cart from localStorage on mount
   useEffect(() => {
