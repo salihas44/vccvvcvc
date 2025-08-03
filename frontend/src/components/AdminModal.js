@@ -11,7 +11,7 @@ import { Badge } from './ui/badge';
 import { Switch } from './ui/switch';
 import { toast } from 'sonner';
 
-const AdminModal = ({ isOpen, onClose }) => {
+const AdminModal = ({ isOpen, onClose, onProductChange }) => {
   const [currentView, setCurrentView] = useState('login'); // 'login', 'dashboard', 'add-product'
   const [admin, setAdmin] = useState(null);
   
