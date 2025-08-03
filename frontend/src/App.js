@@ -178,7 +178,7 @@ const Home = () => {
 
       {/* Admin Panel Button - Fixed */}
       <a 
-        href="/admin" 
+        href="#/admin" 
         className="fixed bottom-6 right-6 bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-semibold shadow-lg transition-all duration-300 hover:shadow-xl flex items-center space-x-2"
         style={{
           background: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
