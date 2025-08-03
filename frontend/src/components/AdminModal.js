@@ -136,23 +136,124 @@ const AdminModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleDeleteProduct = async (productId) => {
-    if (!window.confirm('Bu ürünü silmek istediğinizden emin misiniz?')) return;
+  const handleAddProduct = async (e) => {
+    e.preventDefault();
+    setProductFormLoading(true);
 
     try {
-      const response = await fetch(`${BACKEND_URL}/api/admin/products/${productId}`, {
-        method: 'DELETE',
-        headers: { 'Authorization': `Bearer ${admin.token}` }
+      const submitData = {
+        ...productForm,
+        original_price: parseFloat(productForm.original_price),
+        current_price: parseFloat(productForm.current_price),
+        rating: parseInt(productForm.rating),
+        badge: productForm.badge || null
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/admin/products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${admin.token}`
+        },
+        body: JSON.stringify(submitData)
       });
 
       if (response.ok) {
-        setProducts(products.filter(p => p._id !== productId));
-        toast.success('Ürün başarıyla silindi!');
+        const newProduct = await response.json();
+        setProducts([newProduct, ...products]); // Add to beginning of list
+        toast.success('Ürün başarıyla eklendi!');
+        
+        // Reset form
+        setProductForm({
+          name: '',
+          description: '',
+          image: '',
+          original_price: '',
+          current_price: '',
+          rating: 5,
+          category: '',
+          badge: '',
+          in_stock: true
+        });
+        setCurrentView('dashboard');
       } else {
-        toast.error('Ürün silinirken hata oluştu!');
+        const errorData = await response.json();
+        toast.error(errorData.detail || 'Ürün eklenirken hata oluştu!');
       }
     } catch (error) {
       toast.error('Bağlantı hatası!');
+    } finally {
+      setProductFormLoading(false);
+    }
+  };
+
+  const [editingProduct, setEditingProduct] = useState(null);
+
+  const handleEditProduct = (product) => {
+    setEditingProduct(product);
+    setProductForm({
+      name: product.name,
+      description: product.description,
+      image: product.image,
+      original_price: product.original_price.toString(),
+      current_price: product.current_price.toString(),
+      rating: product.rating,
+      category: product.category,
+      badge: product.badge || '',
+      in_stock: product.in_stock
+    });
+    setCurrentView('add-product');
+  };
+
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+    setProductFormLoading(true);
+
+    try {
+      const submitData = {
+        ...productForm,
+        original_price: parseFloat(productForm.original_price),
+        current_price: parseFloat(productForm.current_price),
+        rating: parseInt(productForm.rating),
+        badge: productForm.badge || null
+      };
+
+      const response = await fetch(`${BACKEND_URL}/api/admin/products/${editingProduct._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${admin.token}`
+        },
+        body: JSON.stringify(submitData)
+      });
+
+      if (response.ok) {
+        const updatedProduct = await response.json();
+        setProducts(products.map(p => p._id === updatedProduct._id ? updatedProduct : p));
+        toast.success('Ürün başarıyla güncellendi!');
+        
+        // Reset form and editing state
+        setEditingProduct(null);
+        setProductForm({
+          name: '',
+          description: '',
+          image: '',
+          original_price: '',
+          current_price: '',
+          rating: 5,
+          category: '',
+          badge: '',
+          in_stock: true
+        });
+        setCurrentView('dashboard');
+      } else {
+        const errorData = await response.json();
+        toast.error(errorData.detail || 'Ürün güncellenirken hata oluştu!');
+      }
+    } catch (error) {
+      toast.error('Bağlantı hatası!');
+    } finally {
+      setProductFormLoading(false);
     }
   };
 
