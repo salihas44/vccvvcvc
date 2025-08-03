@@ -7,6 +7,18 @@ const config = {
 };
 
 module.exports = {
+  devServer: {
+    historyApiFallback: {
+      disableDotRule: true,
+    },
+    setupMiddlewares: (middlewares, devServer) => {
+      // Handle admin route fallback
+      devServer.app.get('/admin*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, 'public/index.html'));
+      });
+      return middlewares;
+    },
+  },
   webpack: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
