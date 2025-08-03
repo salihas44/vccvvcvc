@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { X, Eye, EyeOff, Shield, LogOut, Plus, Edit, Trash2 } from 'lucide-react';
+import { X, Eye, EyeOff, Shield, LogOut, Plus, Edit, Trash2, ArrowLeft } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { Switch } from './ui/switch';
 import { toast } from 'sonner';
 
 const AdminModal = ({ isOpen, onClose }) => {
-  const [currentView, setCurrentView] = useState('login'); // 'login' or 'dashboard'
+  const [currentView, setCurrentView] = useState('login'); // 'login', 'dashboard', 'add-product'
   const [admin, setAdmin] = useState(null);
   
   // Login state
@@ -20,7 +23,22 @@ const AdminModal = ({ isOpen, onClose }) => {
 
   // Dashboard state
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [dashboardLoading, setDashboardLoading] = useState(false);
+
+  // Product form state
+  const [productForm, setProductForm] = useState({
+    name: '',
+    description: '',
+    image: '',
+    original_price: '',
+    current_price: '',
+    rating: 5,
+    category: '',
+    badge: '',
+    in_stock: true
+  });
+  const [productFormLoading, setProductFormLoading] = useState(false);
 
   const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
