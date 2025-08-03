@@ -214,6 +214,11 @@ const Home = () => {
         onAddToCart={handleAddToCart}
       />
 
+      <AdminModal
+        isOpen={isAdminModalOpen}
+        onClose={() => setIsAdminModalOpen(false)}
+      />
+
       {/* Toast Container */}
       <Toaster 
         position="top-right"
