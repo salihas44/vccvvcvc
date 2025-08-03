@@ -716,7 +716,9 @@ const AdminModal = ({ isOpen, onClose }) => {
           <DialogTitle className="sr-only">Admin Panel</DialogTitle>
         </DialogHeader>
         
-        {currentView === 'login' ? renderLoginView() : renderDashboardView()}
+        {currentView === 'login' ? renderLoginView() : 
+         currentView === 'dashboard' ? renderDashboardView() : 
+         renderProductFormView()}
       </DialogContent>
     </Dialog>
   );
