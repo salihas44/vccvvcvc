@@ -53,6 +53,7 @@ const AdminModal = ({ isOpen, onClose }) => {
           setAdmin(adminData);
           setCurrentView('dashboard');
           fetchProducts(adminData.token);
+          fetchCategories();
         } catch (error) {
           localStorage.removeItem('roboturkiye_admin');
           setCurrentView('login');
@@ -62,8 +63,21 @@ const AdminModal = ({ isOpen, onClose }) => {
       }
     } else {
       setError('');
+      setCurrentView('login');
     }
   }, [isOpen]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/categories/`);
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch categories:', error);
+    }
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
