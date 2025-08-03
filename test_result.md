@@ -230,13 +230,9 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus:
-    - "Database Models and Connection"
-    - "JWT Authentication System"
-    - "Products API Endpoints"
-    - "Shopping Cart API"
+  current_focus: []
   stuck_tasks: []
-  test_all: true
+  test_all: false
   test_priority: "high_first"
 
 agent_communication:
