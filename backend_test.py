@@ -178,7 +178,7 @@ class BackendTester:
                 data = response.json()
                 if data.get("access_token") and data.get("user"):
                     self.auth_token = data["access_token"]
-                    self.test_user_id = data["user"]["id"]
+                    self.test_user_id = data["user"]["_id"]
                     self.log_success("User Registration", f"User: {data['user']['name']}")
                     self.results["auth_register"] = True
                 else:
