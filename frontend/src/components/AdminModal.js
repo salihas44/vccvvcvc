@@ -279,6 +279,11 @@ const AdminModal = ({ isOpen, onClose, onProductChange }) => {
       if (response.ok) {
         setProducts(products.filter(p => p._id !== productId));
         toast.success('Ürün başarıyla silindi!');
+        
+        // Update main page products
+        if (onProductChange) {
+          onProductChange();
+        }
       } else {
         toast.error('Ürün silinirken hata oluştu!');
       }
