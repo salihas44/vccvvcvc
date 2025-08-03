@@ -487,6 +487,8 @@ const AdminModal = ({ isOpen, onClose }) => {
       </form>
     </div>
   );
+
+  const formatPrice = (price) => {
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
       currency: 'TRY',
